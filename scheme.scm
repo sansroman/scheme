@@ -54,9 +54,9 @@
 (define member?
   (lambda  (a lat)
   (cond
-    ((null? lat) #f)
-    (else (or (eq? (car lat) a)
-              (member? a (cdr a)))))))
+    ((null? lat)#f)
+    (else (or (equal? (car lat) a)
+              (member? a (cdr lat)))))))
 
 (define rember
   (lambda  (a lat)
@@ -332,3 +332,146 @@
     ((member? (car lat) (cdr lat)) #f)
     (else (set? (cdr lat))))))
 
+(define makeset
+  (lambda (lat)
+  (cond
+    ((null? lat) '())
+    ((member? (car lat) (cdr lat)) (makeset(cdr lat)))
+    (else (cons (car lat) (makeset (cdr lat)))))))
+
+
+(define subset?
+  (lambda (set1 set2)
+  (cond
+    ((null? set1) #t)
+    ((member? (car set1) set2) (subset? (cdr set1) set2))
+  (else #f))))
+
+; Their implementation
+(define eqset?
+  (lambda (set1 set2)
+  (cond
+    ((and (null? set1) (null? set2)) #t)
+    ((or (null? set1) (null? set2)) #f)
+    (else (eqset? (cdr set1) (multirember (car set1) set2))))))
+
+(define eqset?
+  (lambda (set1 set2)
+  (and (subset? set1 set2) (subset? set2 set1))))
+
+(define intersect?
+  (lambda (set1 set2)
+  (cond
+    ((null? set1) #f)
+    ((member? (car set1) set2) #t)
+    (else (intersect? (cdr set1) set2)))))
+
+(define intersect
+  (lambda (set1 set2)
+  (cond
+    ((null? set1) '())
+    ((member? (car set1) set2) (cons (car set1) (intersect (cdr set1) set2)))
+    (else (intersect (cdr set1) set2)))))
+
+(define union
+  (lambda (set1 set2)
+  (cond
+    ((null? set2) set1)
+    ((member? (car set2) set1) (union set1 (cdr set2)))
+    (else (cons (car set2) (union set1 (cdr set2)))))))
+
+(define intersectall
+  (lambda (l-set)
+  (cond
+    ((null? (cdr l-set)) (car l-set))
+    (else (intersect (car l-set) (intersectall (cdr l-set)))))))
+
+(define a-pair?
+  (lambda (x)
+  (cond
+    ((atom? x)#f)
+    ((null? x)#f)
+    ((null? (cdr x)) #f)
+    ((null? (cdr (cdr x))) #t)
+    (else #f))))
+
+(define first
+  (lambda (p)
+  (cond
+    (else (car p)))))
+
+(define second
+  (lambda (p)
+  (cond
+    (else (car (cdr p))))))
+
+(define build
+  (lambda (s1 s2)
+  (cond 
+    (else (cons s1 (cons s2 '()))))))
+
+(define revrel
+  (lambda (rel)
+  (cond
+    ((null? rel) '())
+    (else (cons (build (second (car rel)) (first (car rel))) (revrel (cdr rel)))))))
+
+(define revpair
+  (lambda (pair)
+  (build (second pair) (first pair))))
+
+(define seconds
+  (lambda (rel)
+  (cond
+    ((null? rel) '())
+    (else (cons  (car (cdr (car rel))) (seconds (cdr rel)))))))
+
+(define eq?-c
+  (lambda (a)
+  (lambda (x)
+  (eq? x a))))
+
+(define rember-f
+  (lambda (test? a l)
+  (cond
+    ((null? l) '())
+    (else (cond
+      ((test? (car l) a) (cdr l))
+      (else (cons (car l) (rember-f test? a (cdr l)))))))))
+    
+(define insertL-f
+  (lambda (test?)
+  (lambda (new old l)
+  (cond
+    ((null? l) '())
+    ((test? (car l) old)
+      (cons new (cons old (cdr l))))
+    (else (cons (car l)
+      ((insertL-f test?) new old (cdr l))))))))
+
+(define multirember-f
+  (lambda (test?)
+  (lambda (a lat)
+  (cond
+    ((null? lat) '())
+    ((test? a (car lat)) ((multirember-f test?) a (cdr lat)))
+    (else (cons (car lat) ((multirember-f test?) a (cdr lat))))))))
+
+(define eq?-tuna
+  (eq?-c 'tuna))
+
+(define multiremberT
+  (lambda (test? lat)
+  (cond
+    ((null? lat) '())
+    ((test? (car lat)) (multiremberT test? (cdr lat)))
+    (else (cons (car lat) (multiremberT test? (cdr lat)))))))
+
+
+(define multiinsertLR
+    (lambda (new oldL oldR lat)
+    (cond
+      ((null? lat) '())
+      ((eq? (car lat) oldL) (cons new (cons oldL (multiinsertLR new oldL oldR (cdr lat)))))
+      ((eq? (car lat) oldR) (cons oldR (cons new (multiinsertLR new oldL oldR (cdr lat)))))
+      (else (cons (car lat) (multiinsertLR new oldL oldR (cdr lat)))))))
