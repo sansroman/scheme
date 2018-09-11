@@ -475,3 +475,10 @@
       ((eq? (car lat) oldL) (cons new (cons oldL (multiinsertLR new oldL oldR (cdr lat)))))
       ((eq? (car lat) oldR) (cons oldR (cons new (multiinsertLR new oldL oldR (cdr lat)))))
       (else (cons (car lat) (multiinsertLR new oldL oldR (cdr lat)))))))
+
+
+(define Y
+  (lambda (le)
+   ((lambda (f) (f f))
+    (lambda (f)
+      (le (lambda (x) ((f f) x)))))))
