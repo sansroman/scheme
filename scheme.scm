@@ -520,3 +520,8 @@
     (cond
       ((null? l) 0)
       (else (add1 (length (cdr l))))))) eternity)
+(define Y
+  (lambda (le)
+   ((lambda (f) (f f))
+    (lambda (f)
+      (le (lambda (x) ((f f) x)))))))
