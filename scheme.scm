@@ -475,3 +475,48 @@
       ((eq? (car lat) oldL) (cons new (cons oldL (multiinsertLR new oldL oldR (cdr lat)))))
       ((eq? (car lat) oldR) (cons oldR (cons new (multiinsertLR new oldL oldR (cdr lat)))))
       (else (cons (car lat) (multiinsertLR new oldL oldR (cdr lat)))))))
+
+
+(define keep-looking
+  (lambda (a sorn lat)
+  (cond
+    ((number? sorn)
+    (keep-looking a (pick sorn lat) lat))
+    (else (eq? sorn a)))))
+
+(define A
+  (lambda (n m)
+  (cond
+    ((zero? n) (add1 m))
+    ((zero? m) (A (sub1 n) 1))
+    (else (A (sub1 n) (A n (sub1 m)))))))
+
+(define eternity
+  (lambda (x)
+  (eternity x)))
+
+(define length
+  (lambda (l)
+  (cond
+    ((null? l) 0)
+    (else (add1 (length (cdr l)))))))
+
+(((lambda (mk-length)
+  (mk-length mk-length))
+  (lambda (mk-length)
+    (lambda (l)
+      (cond
+        ((null? l) 0)
+        (else (add1 ((mk-length eternity) (cdr l)))))))) '(apples))
+
+
+(lambda (l)
+  (cond
+    ((null? l) 0)
+    (else (add1 (eternity (cdr l))))))
+
+((lambda (length)
+  (lambda (l)
+    (cond
+      ((null? l) 0)
+      (else (add1 (length (cdr l))))))) eternity)
