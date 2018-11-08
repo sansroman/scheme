@@ -1,4 +1,6 @@
-(define (reverse-test list)
-  (if (null? (cdr list)
-             (car list)
-             (cons (reverse (cdr list)) (car list)))))
+(define (reverse items)
+  (define (iter items result)
+    (if (null? items)
+        result
+        (iter (cdr items) (cons (car items) result))))
+  (iter items '()))
